@@ -48,6 +48,7 @@
     "array-callback-return": "warn",
     "camelcase": "warn",
     "curly": "warn",
+    "no-console": 0,
     "default-case": [
       "warn",
       {

@@ -5,9 +5,9 @@ import XLSX from "xlsx";
 
 import ExcelSheet from "../elements/ExcelSheet";
 import {
-  strToArrBuffer,
-  excelSheetFromAoA,
-  excelSheetFromDataSet
+    strToArrBuffer,
+    excelSheetFromAoA,
+    excelSheetFromDataSet
 } from "../utils/DataUtil";
 
 class ExcelFile extends React.Component {
@@ -15,152 +15,152 @@ class ExcelFile extends React.Component {
   defaultFileExtension = "xlsx";
 
   static props = {
-    hideElement: PropTypes.bool,
-    filename: PropTypes.string,
-    fileExtension: PropTypes.string,
-    element: PropTypes.any,
-    children: function(props, propName, componentName) {
-      React.Children.forEach(props[propName], child => {
-        if (child.type !== ExcelSheet) {
-          throw new Error(
-            "<ExcelFile> can only have <ExcelSheet> as children. "
-          );
-        }
-      });
-    }
+      hideElement: PropTypes.bool,
+      filename: PropTypes.string,
+      fileExtension: PropTypes.string,
+      element: PropTypes.any,
+      children: function(props, propName, componentName) {
+          React.Children.forEach(props[propName], child => {
+              if (child.type !== ExcelSheet) {
+                  throw new Error(
+                      "<ExcelFile> can only have <ExcelSheet> as children. "
+                  );
+              }
+          });
+      }
   };
 
   static defaultProps = {
-    hideElement: false,
-    filename: "Download",
-    fileExtension: "xlsx",
-    element: <button>Download</button>
+      hideElement: false,
+      filename: "Download",
+      fileExtension: "xlsx",
+      element: <button>Download</button>
   };
 
   constructor(props) {
-    super(props);
+      super(props);
 
-    if (this.props.hideElement) {
-      this.download();
-    } else {
-      this.handleDownload = this.download.bind(this);
-    }
+      if (this.props.hideElement) {
+          this.download();
+      } else {
+          this.handleDownload = this.download.bind(this);
+      }
 
-    this.createSheetData = this.createSheetData.bind(this);
+      this.createSheetData = this.createSheetData.bind(this);
   }
 
   createSheetData(sheet) {
-    const columns = sheet.props.children;
-    const sheetData = [
-      React.Children.map(columns, column => column.props.label)
-    ];
-    const data =
+      const columns = sheet.props.children;
+      const sheetData = [
+          React.Children.map(columns, column => column.props.label)
+      ];
+      const data =
       typeof sheet.props.data === "function"
-        ? sheet.props.data()
-        : sheet.props.data;
+          ? sheet.props.data()
+          : sheet.props.data;
 
-    data.forEach(row => {
-      const sheetRow = [];
+      data.forEach(row => {
+          const sheetRow = [];
 
-      React.Children.forEach(columns, column => {
-        const getValue =
+          React.Children.forEach(columns, column => {
+              const getValue =
           typeof column.props.value === "function"
-            ? column.props.value
-            : row => row[column.props.value];
-        const itemValue = getValue(row);
-        sheetRow.push(isNaN(itemValue) ? itemValue || "" : itemValue);
+              ? column.props.value
+              : row => row[column.props.value];
+              const itemValue = getValue(row);
+              sheetRow.push(isNaN(itemValue) ? itemValue || "" : itemValue);
+          });
+
+          sheetData.push(sheetRow);
       });
 
-      sheetData.push(sheetRow);
-    });
-
-    return sheetData;
+      return sheetData;
   }
 
   download() {
-    const wb = {
-      SheetNames: React.Children.map(
-        this.props.children,
-        sheet => sheet.props.name
-      ),
-      Sheets: {}
-    };
+      const wb = {
+          SheetNames: React.Children.map(
+              this.props.children,
+              sheet => sheet.props.name
+          ),
+          Sheets: {}
+      };
 
-    React.Children.forEach(this.props.children, sheet => {
-      if (
-        typeof sheet.props.dataSet === "undefined" ||
+      React.Children.forEach(this.props.children, sheet => {
+          if (
+              typeof sheet.props.dataSet === "undefined" ||
         sheet.props.dataSet.length === 0
-      ) {
-        wb.Sheets[sheet.props.name] = excelSheetFromAoA(
-          this.createSheetData(sheet)
-        );
-      } else {
-        wb.Sheets[sheet.props.name] = excelSheetFromDataSet(
-          sheet.props.dataSet
-        );
-      }
-    });
+          ) {
+              wb.Sheets[sheet.props.name] = excelSheetFromAoA(
+                  this.createSheetData(sheet)
+              );
+          } else {
+              wb.Sheets[sheet.props.name] = excelSheetFromDataSet(
+                  sheet.props.dataSet
+              );
+          }
+      });
 
-    const fileExtension = this.getFileExtension();
-    const fileName = this.getFileName();
-    const wbout = XLSX.write(wb, {
-      bookType: fileExtension,
-      bookSST: true,
-      type: "binary"
-    });
+      const fileExtension = this.getFileExtension();
+      const fileName = this.getFileName();
+      const wbout = XLSX.write(wb, {
+          bookType: fileExtension,
+          bookSST: true,
+          type: "binary"
+      });
 
-    saveAs(
-      new Blob([strToArrBuffer(wbout)], {
-        type:
+      saveAs(
+          new Blob([strToArrBuffer(wbout)], {
+              type:
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      }),
-      fileName
-    );
+          }),
+          fileName
+      );
   }
 
   getFileName() {
-    if (
-      this.props.filename === null ||
+      if (
+          this.props.filename === null ||
       typeof this.props.filename !== "string"
-    ) {
-      throw Error("Invalid file name provided");
-    }
-    return this.getFileNameWithExtension(
-      this.props.filename,
-      this.getFileExtension()
-    );
+      ) {
+          throw Error("Invalid file name provided");
+      }
+      return this.getFileNameWithExtension(
+          this.props.filename,
+          this.getFileExtension()
+      );
   }
 
   getFileExtension() {
-    let extension = this.props.fileExtension;
+      let extension = this.props.fileExtension;
 
-    if (extension.length === 0) {
-      const slugs = this.props.filename.split(".");
-      if (slugs.length === 0) {
-        throw Error("Invalid file name provided");
+      if (extension.length === 0) {
+          const slugs = this.props.filename.split(".");
+          if (slugs.length === 0) {
+              throw Error("Invalid file name provided");
+          }
+          extension = slugs[slugs.length - 1];
       }
-      extension = slugs[slugs.length - 1];
-    }
 
-    if (this.fileExtensions.indexOf(extension) !== -1) {
-      return extension;
-    }
+      if (this.fileExtensions.indexOf(extension) !== -1) {
+          return extension;
+      }
 
-    return this.defaultFileExtension;
+      return this.defaultFileExtension;
   }
 
   getFileNameWithExtension(filename, extension) {
-    return `${filename}.${extension}`;
+      return `${filename}.${extension}`;
   }
 
   render() {
-    const { hideElement, element } = this.props;
+      const { hideElement, element } = this.props;
 
-    if (hideElement) {
-      return null;
-    } else {
-      return <span onClick={this.handleDownload}>{element}</span>;
-    }
+      if (hideElement) {
+          return null;
+      } else {
+          return <span onClick={this.handleDownload}>{element}</span>;
+      }
   }
 }
 
