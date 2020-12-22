@@ -1,4 +1,5 @@
 import XLSX from 'xlsx';
+import moment from 'moment';
 
 const strToArrBuffer = (s) => {
     var buf = new ArrayBuffer(s.length);
@@ -11,14 +12,8 @@ const strToArrBuffer = (s) => {
     return buf;
 };
 
-const dateToNumber = (v, date1904) => {
-    if (date1904) {
-        v += 1462;
-    }
-
-    var epoch = Date.parse(v);
-
-    return (epoch - new Date(Date.UTC(1899, 11, 30))) / (24 * 60 * 60 * 1000);
+const dateToNumber = (v) => {
+    return moment(v).format("X");
 };
 
 const excelSheetFromDataSet = (dataSet) => {
@@ -140,7 +135,7 @@ function getCell(v, cellRef, ws) {
     } else if (v instanceof Date) {
         cell.t = 'n';
         cell.z = XLSX.SSF._table[14];
-        cell.v = dateToNumber(cell.v);
+        cell.v = dateToNumber(v);
     } else if (typeof v === 'object') {
         cell = getCellFromObject(v);
     } else {
@@ -165,7 +160,7 @@ function getCellFromObject(v) {
     } else if (v.value instanceof Date) {
         cell.t = 'n';
         cell.z = XLSX.SSF._table[14];
-        cell.v = dateToNumber(cell.v);
+        cell.v = dateToNumber(v.value);
     } else {
         cell.v = `${v.value}`;
         cell.t = 's';

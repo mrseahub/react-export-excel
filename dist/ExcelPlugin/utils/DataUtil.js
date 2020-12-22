@@ -11,6 +11,10 @@ var _xlsx = require('xlsx');
 
 var _xlsx2 = _interopRequireDefault(_xlsx);
 
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var strToArrBuffer = function strToArrBuffer(s) {
@@ -24,14 +28,8 @@ var strToArrBuffer = function strToArrBuffer(s) {
     return buf;
 };
 
-var dateToNumber = function dateToNumber(v, date1904) {
-    if (date1904) {
-        v += 1462;
-    }
-
-    var epoch = Date.parse(v);
-
-    return (epoch - new Date(Date.UTC(1899, 11, 30))) / (24 * 60 * 60 * 1000);
+var dateToNumber = function dateToNumber(v) {
+    return (0, _moment2.default)(v).format("X");
 };
 
 var excelSheetFromDataSet = function excelSheetFromDataSet(dataSet) {
@@ -151,7 +149,7 @@ function getCell(v, cellRef, ws) {
     } else if (v instanceof Date) {
         cell.t = 'n';
         cell.z = _xlsx2.default.SSF._table[14];
-        cell.v = dateToNumber(cell.v);
+        cell.v = dateToNumber(v);
     } else if ((typeof v === 'undefined' ? 'undefined' : _typeof(v)) === 'object') {
         cell = getCellFromObject(v);
     } else {
@@ -176,7 +174,7 @@ function getCellFromObject(v) {
     } else if (v.value instanceof Date) {
         cell.t = 'n';
         cell.z = _xlsx2.default.SSF._table[14];
-        cell.v = dateToNumber(cell.v);
+        cell.v = dateToNumber(v.value);
     } else {
         cell.v = '' + v.value;
         cell.t = 's';
