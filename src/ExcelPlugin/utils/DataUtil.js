@@ -13,7 +13,7 @@ const strToArrBuffer = (s) => {
 };
 
 const dateToNumber = (v) => {
-    return moment(v).format("X");
+    return moment(v).format("dd/mm/yyyy");
 };
 
 const excelSheetFromDataSet = (dataSet) => {
@@ -142,7 +142,7 @@ function getCell(v, cellRef, ws) {
         cell.v = `${v}`;
         cell.t = 's';
     }
-    console.log('getCell', { cell });
+    __DEV__ && console.log('cell', cell);
     ws[cellRef] = cell;
 }
 
@@ -166,7 +166,6 @@ function getCellFromObject(v) {
         cell.t = 's';
     }
     cell.s = v.style;
-    console.log('getCellFromObject', { cell });
     return cell;
 }
 

@@ -29,7 +29,7 @@ var strToArrBuffer = function strToArrBuffer(s) {
 };
 
 var dateToNumber = function dateToNumber(v) {
-    return (0, _moment2.default)(v).format("X");
+    return (0, _moment2.default)(v).format("dd/mm/yyyy");
 };
 
 var excelSheetFromDataSet = function excelSheetFromDataSet(dataSet) {
@@ -156,7 +156,7 @@ function getCell(v, cellRef, ws) {
         cell.v = '' + v;
         cell.t = 's';
     }
-    console.log('getCell', { cell: cell });
+    __DEV__ && console.log('cell', cell);
     ws[cellRef] = cell;
 }
 
@@ -180,7 +180,6 @@ function getCellFromObject(v) {
         cell.t = 's';
     }
     cell.s = v.style;
-    console.log('getCellFromObject', { cell: cell });
     return cell;
 }
 
