@@ -135,20 +135,20 @@ function getCell(v, cellRef, ws) {
         return;
     }
     if (typeof v === "number") {
-        cell.v = v;
+        cell.v = String(v);
         cell.t = "n";
     } else if (typeof v === "boolean") {
-        cell.v = v;
+        cell.v = String(v);
         cell.t = "b";
     } else if (v instanceof Date) {
         cell.t = "n";
         cell.z = XLSX.SSF._table[14];
         cell.v = dateToNumber(cell.v);
     } else if (typeof v === "object") {
-        cell.v = v.value;
+        cell.v = String(v.value);
         cell.s = v.style;
     } else {
-        cell.v = v;
+        cell.v = String(v);
         cell.t = "s";
     }
     ws[cellRef] = cell;
