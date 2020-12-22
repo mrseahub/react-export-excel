@@ -142,15 +142,16 @@ function getCell(v, cellRef, ws) {
 		cell.z = XLSX.SSF._table[14];
 		cell.v = dateToNumber(cell.v);
 	} else if (typeof v === 'object') {
-		getCellFromObject(v, cellRef, ws);
+		cell = getCellFromObject(v);
 	} else {
 		cell.v = `${v}`;
 		cell.t = 's';
 	}
+	console.log('getCell',{cell});
 	ws[cellRef] = cell;
 }
 
-function getCellFromObject(v, cellRef, ws) {
+function getCellFromObject(v) {
 	var cell = {};
 	if (v.value === null) {
 		return;
@@ -169,8 +170,9 @@ function getCellFromObject(v, cellRef, ws) {
 		cell.v = `${v.value}`;
 		cell.t = 's';
     }
-    cell.s = v.style;
-	ws[cellRef] = cell;
+	cell.s = v.style;
+	console.log('getCellFromObject',{cell});
+	return cell;
 }
 
 function fixRange(range, R, C, rowCount, xSteps, ySteps) {
