@@ -156,7 +156,6 @@ function getCell(v, cellRef, ws) {
         cell.v = '' + v;
         cell.t = 's';
     }
-    __DEV__ && console.log('cell', cell);
     ws[cellRef] = cell;
 }
 
